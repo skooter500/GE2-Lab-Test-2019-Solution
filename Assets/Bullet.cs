@@ -21,9 +21,4 @@ public class Bullet : MonoBehaviour
     {
         transform.Translate(0, 0, speed * Time.deltaTime);
     }
-
-    public void OnCollisionEnter(Collision collision)
-    {
-        Destroy(this.gameObject);
-    }
 }

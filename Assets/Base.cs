@@ -8,6 +8,16 @@ public class Base : MonoBehaviour
 
     public GameObject fighterPrefab;
 
+    public void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.gameObject.tag);
+        if (collision.gameObject.tag == "bullet")
+        {
+            tiberium--;
+            Destroy(collision.gameObject);
+        }
+    }
+
     IEnumerator GainTiberium()
     {
         while (true)
@@ -21,16 +31,16 @@ public class Base : MonoBehaviour
     {
         while(true)
         {
-            if (tiberium > 5)
+            if (tiberium > 10)
             {
-                GameObject fighter = GameObject.Instantiate<GameObject>(fighterPrefab);
-                fighter.transform.position = this.transform.position;
+                GameObject fighter = GameObject.Instantiate<GameObject>(fighterPrefab, transform.position, Quaternion.identity);
                 fighter.GetComponent<FighterController>().myBase = this;
                 foreach(Renderer r in fighter.GetComponentsInChildren<Renderer>())
                 {
                     r.material.color = GetComponent<Renderer>().material.color;
                 }
-                tiberium -= 5;
+                tiberium -= 10;
+                fighter.transform.parent = this.transform;
             }
             yield return new WaitForSeconds(2.0f);
         }

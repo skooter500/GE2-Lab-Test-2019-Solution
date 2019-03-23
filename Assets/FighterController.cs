@@ -8,15 +8,15 @@ class FindTargetState: State
     public override void Enter()
     {
         Base[] bases = GameObject.FindObjectsOfType<Base>();
-        Base myBase = owner.GetComponent<Base>();
+        Base myBase = owner.GetComponent<FighterController>().myBase;
         Base target = myBase;
         while (target == myBase)
         {
             target = bases[Random.Range(0, bases.Length)];            
         }
-        Vector3 toTarget = owner.transform.position - target.transform.position;
-        toTarget.Normalize();
-        attackPos = target.transform.position + toTarget * (owner.GetComponent<FighterController>().targetDistance);
+        Vector3 toOwner = owner.transform.position - target.transform.position;
+        toOwner.Normalize();
+        attackPos = target.transform.position + toOwner * (owner.GetComponent<FighterController>().targetDistance);
         owner.GetComponent<Arrive>().targetPosition = attackPos;
         owner.GetComponent<Arrive>().enabled = true;
         owner.GetComponent<FighterController>().targetBase = target;
@@ -24,11 +24,12 @@ class FindTargetState: State
     public override void Exit()
     {
         owner.GetComponent<Arrive>().enabled = false;
+        owner.GetComponent<Boid>().velocity = Vector3.zero;
     }
 
     public override void Think()
     {
-        if (Vector3.Distance(owner.transform.position, attackPos) < 1.0f)
+        if (Vector3.Distance(owner.transform.position, attackPos) < 2.0f)
         {
             owner.GetComponent<StateMachine>().ChangeState(new AttackingState());
         }
@@ -67,23 +68,23 @@ public class ReturnToBaseState : State
 {
     public override void Enter()
     {
-        Seek s = owner.GetComponent<Seek>();
-        s.target = owner.GetComponent<FighterController>().myBase.transform.position;
-        s.enabled = true;
+        Arrive a = owner.GetComponent<Arrive>();
+        a.targetPosition = owner.GetComponent<FighterController>().myBase.transform.position;
+        a.enabled = true;
     }
 
     public override void Think()
     {
-        if (Vector3.Distance(owner.transform.position, owner.GetComponent<FighterController>().myBase.transform.position) < 0.5f)
+        if (Vector3.Distance(owner.transform.position, owner.GetComponent<FighterController>().myBase.transform.position) < 2)
         {
             owner.GetComponent<StateMachine>().ChangeState(new FindTargetState());
-            owner.GetComponent<FighterController>().tiberium += 5;
-            owner.GetComponent<FighterController>().myBase.GetComponent<Base>().tiberium -= 5;
+            owner.GetComponent<FighterController>().tiberium += 7;
+            owner.GetComponent<FighterController>().myBase.GetComponent<Base>().tiberium -= 7;
         }
     }
     public override void Exit()
     {
-        owner.GetComponent<Seek>().enabled = false;
+        owner.GetComponent<Arrive>().enabled = false;
     }
 }
 
