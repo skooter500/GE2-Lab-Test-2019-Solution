@@ -20,7 +20,7 @@ Marking Scheme:
 
 | Description | Marks |
 |-------------|-------|
-| Fighter spawning | 20 marks |
+| Fighter spawning & base accumulating tiberium | 20 marks |
 | Fighter picking a target | 20 marks |
 | Fighter shooting | 20 marks |
 | Fighter refueling |20 marks |
