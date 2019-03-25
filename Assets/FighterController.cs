@@ -24,7 +24,7 @@ class FindTargetState: State
     public override void Exit()
     {
         owner.GetComponent<Arrive>().enabled = false;
-        owner.GetComponent<Boid>().velocity = Vector3.zero;
+        //owner.GetComponent<Boid>().velocity = Vector3.zero;
     }
 
     public override void Think()
@@ -47,7 +47,7 @@ public class AttackingState : State
     {
         if (fc.tiberium > 0)
         {
-            Vector3 bulletSpawn = owner.transform.position + owner.transform.forward * 2;
+            Vector3 bulletSpawn = owner.transform.position + owner.transform.forward;
             GameObject b = GameObject.Instantiate<GameObject>(fc.bulletPrefab, bulletSpawn, owner.transform.rotation);
 
             foreach (Renderer r in b.GetComponentsInChildren<Renderer>())
@@ -77,14 +77,25 @@ public class ReturnToBaseState : State
     {
         if (Vector3.Distance(owner.transform.position, owner.GetComponent<FighterController>().myBase.transform.position) < 2)
         {
-            owner.GetComponent<StateMachine>().ChangeState(new FindTargetState());
-            owner.GetComponent<FighterController>().tiberium += 7;
-            owner.GetComponent<FighterController>().myBase.GetComponent<Base>().tiberium -= 7;
+            owner.GetComponent<StateMachine>().ChangeState(new RefuelState());
         }
     }
     public override void Exit()
     {
         owner.GetComponent<Arrive>().enabled = false;
+    }
+}
+
+public class RefuelState : State
+{
+    public override void Think()
+    {
+        if (owner.GetComponent<FighterController>().myBase.tiberium >= 7)
+        {
+            owner.GetComponent<StateMachine>().ChangeState(new FindTargetState());
+            owner.GetComponent<FighterController>().tiberium += 7;
+            owner.GetComponent<FighterController>().myBase.GetComponent<Base>().tiberium -= 7;
+        }
     }
 }
 
@@ -94,7 +105,7 @@ public class FighterController : MonoBehaviour
     public Base targetBase;
     public float targetDistance = 2;
     public GameObject bulletPrefab;
-    public int tiberium = 10;
+    public float tiberium = 10;
     // Start is called before the first frame update
     void Start()
     {
